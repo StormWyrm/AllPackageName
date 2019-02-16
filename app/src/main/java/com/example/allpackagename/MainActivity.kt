@@ -8,9 +8,9 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -21,6 +21,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
+import gdut.bsx.share2.FileUtil
+import gdut.bsx.share2.Share2
+import gdut.bsx.share2.ShareContentType
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.PrintStream
@@ -116,9 +119,7 @@ class MainActivity : AppCompatActivity() {
     private fun saveTextAndShare() {
 
         Thread {
-            var msgText = ""
-            var file: File? = null
-            file = File("${Environment.getExternalStorageDirectory().absolutePath}/packageInfos.txt")
+            var file = File("$externalCacheDir/packageInfos.txt")
             if (!file.exists()) {
                 file.createNewFile()
             }
@@ -128,23 +129,20 @@ class MainActivity : AppCompatActivity() {
                 val msg = "应用名：${appInfo.appName};  包名：${appInfo.packageName}"
                 ps.write(msg.toByteArray())
                 ps.println()
-                msgText += "$msg \n"
             }
             ps.close()
 
-
             runOnUiThread {
-                //                var uri: Uri
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                    //data是file类型,忘了复制过来
-//                    uri = FileProvider.getUriForFile(this, "com.example.allpackagename.fileprovider", file)
-//                } else {
-//                    uri = Uri.fromFile(file)
-//                }
-                val intent = Intent(Intent.ACTION_SEND)
-                intent.type = "text/plain"
-                intent.putExtra(Intent.EXTRA_TEXT, msgText)
-                startActivity(intent)
+                Share2.Builder(this)
+                    // 指定分享的文件类型
+                    .setContentType(ShareContentType.FILE)
+                    // 设置要分享的文件 Uri
+                    .setShareFileUri(FileUtil.getFileUri(this,ShareContentType.FILE,file))
+                    // 设置分享选择器的标题
+                    .setTitle("Share Image")
+                    .build()
+                    // 发起分享
+                    .shareBySystem()
             }
         }.start()
     }
