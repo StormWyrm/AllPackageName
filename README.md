@@ -1,2 +1,5 @@
 # AllPackageName
-一款获取android手机包名的应用
+一款获取android手机包名的应用,扫描下面二维码下载体验：
+  
+![Alt text](\img\qr_allpackagename_apk.png)
+
