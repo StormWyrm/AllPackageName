@@ -4,11 +4,9 @@ import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
@@ -27,6 +25,7 @@ import gdut.bsx.share2.ShareContentType
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.PrintStream
+import java.security.MessageDigest
 import java.util.*
 
 
@@ -126,7 +125,7 @@ class MainActivity : AppCompatActivity() {
             val ps = PrintStream(file)
             val appInfos = adapter?.data ?: ArrayList<AppInfo>()
             for (appInfo in appInfos) {
-                val msg = "应用名：${appInfo.appName};  包名：${appInfo.packageName}"
+                val msg = "应用名：${appInfo.appName}; 包名：${appInfo.packageName}; 签名: ${appInfo.signature}"
                 ps.write(msg.toByteArray())
                 ps.println()
             }
@@ -137,7 +136,7 @@ class MainActivity : AppCompatActivity() {
                     // 指定分享的文件类型
                     .setContentType(ShareContentType.FILE)
                     // 设置要分享的文件 Uri
-                    .setShareFileUri(FileUtil.getFileUri(this,ShareContentType.FILE,file))
+                    .setShareFileUri(FileUtil.getFileUri(this, ShareContentType.FILE, file))
                     // 设置分享选择器的标题
                     .setTitle("Share Image")
                     .build()
@@ -187,17 +186,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getAppInfo(appType: Int = ALL_APP): List<AppInfo> {
-        fun addToList(
-            packageInfo: PackageInfo,
-            appInfo: ArrayList<AppInfo>
-        ) {
-            val appName = packageInfo.applicationInfo.loadLabel(packageManager)
-            val packageName = packageInfo.packageName
-            val appIcon = packageInfo.applicationInfo.loadIcon(packageManager)
-            appInfo.add(AppInfo(appName as String, packageName, appIcon))
-        }
-
-        val packageInfos = packageManager.getInstalledPackages(0)
+        val packageInfos = packageManager.getInstalledPackages(PackageManager.GET_SIGNATURES)
         val appInfo = ArrayList<AppInfo>()
         for (packageInfo in packageInfos) {
             when (appType) {
@@ -221,5 +210,29 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun addToList(
+        packageInfo: PackageInfo,
+        appInfo: ArrayList<AppInfo>
+    ) {
+        val appName = packageInfo.applicationInfo.loadLabel(packageManager)
+        val packageName = packageInfo.packageName
+        val appIcon = packageInfo.applicationInfo.loadIcon(packageManager)
+        val signature = packageInfo.signatures[0].toByteArray()
+        appInfo.add(AppInfo(appName as String, packageName, appIcon, getSignatureSha1(signature)))
+    }
+
+    private fun getSignatureSha1(bytes: ByteArray) : String {
+        val md = MessageDigest.getInstance("SHA1")
+        val publicKey = md.digest(bytes)
+        val hexString = StringBuilder()
+        for (i in publicKey.indices) {
+            val appendString = Integer.toHexString(0xFF and publicKey[i].toInt())
+                .toUpperCase(Locale.US)
+            if (appendString.length == 1)
+                hexString.append("0")
+            hexString.append(appendString)
+        }
+        return hexString.toString()
+    }
 
 }
