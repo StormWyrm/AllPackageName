@@ -14,6 +14,16 @@ android {
         versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                //这里修改apk文件名
+                outputFileName = "AllPackageName_${variant.versionName}.apk"
+            }
+
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
