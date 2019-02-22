@@ -231,6 +231,9 @@ class MainActivity : AppCompatActivity() {
             if (appendString.length == 1)
                 hexString.append("0")
             hexString.append(appendString)
+            if(i != publicKey.size - 1){
+                hexString.append(":")
+            }
         }
         return hexString.toString()
     }
