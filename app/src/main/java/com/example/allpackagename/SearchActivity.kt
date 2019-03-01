@@ -101,10 +101,10 @@ class SearchActivity : AppCompatActivity() {
     private fun initToolbar() {
         toolbar.run {
             title = "搜索"
+            setSupportActionBar(this)
             setNavigationOnClickListener {
                 finish()
             }
-            setSupportActionBar(this)
         }
         supportActionBar?.run {
             setDisplayHomeAsUpEnabled(true)//设置返回按钮
