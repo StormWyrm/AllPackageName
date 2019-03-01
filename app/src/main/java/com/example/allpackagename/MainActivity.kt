@@ -9,6 +9,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.text.Html
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -17,8 +18,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.chad.library.adapter.base.BaseQuickAdapter
-import com.chad.library.adapter.base.BaseViewHolder
 import gdut.bsx.share2.FileUtil
 import gdut.bsx.share2.Share2
 import gdut.bsx.share2.ShareContentType
@@ -27,7 +26,7 @@ import java.io.File
 import java.io.PrintStream
 import java.security.MessageDigest
 import java.util.*
-
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
     private val SYSTEM_APP = 0x00000011
@@ -36,6 +35,10 @@ class MainActivity : AppCompatActivity() {
 
     private var curMode = ALL_APP
     private var adapter: MainAdapter? = null
+
+    companion object {
+        var appInfos: ArrayList<AppInfo> = ArrayList()
+    }
 
     private val dialog: AlertDialog by lazy {
         AlertDialog.Builder(this)
@@ -47,7 +50,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        initToolbar()
         loadAppinfo()
+    }
+
+    private fun initToolbar() {
+        toolbar.run {
+            title = "AllPackageName"
+            setSupportActionBar(this)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -60,6 +71,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
+            R.id.search -> {
+                SearchActivity.start(this)
+            }
             R.id.system_app -> {
                 if (curMode == SYSTEM_APP) {
                     return true
@@ -154,13 +168,17 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread {
                 dialog.dismiss()
                 if (adapter == null) {
-                    adapter = MainAdapter(appInfos)
-                    adapter?.setOnItemLongClickListener { helper, view, position ->
-                        val packageName = (helper.getItem(position) as? AppInfo)?.packageName
-                        val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        clipboardManager.primaryClip = ClipData.newPlainText(null, packageName)
-                        Toast.makeText(this, "已复制包名到剪切板！", Toast.LENGTH_SHORT).show()
-                        true
+                    adapter = MainAdapter(appInfos)?.apply {
+                        setOnItemLongClickListener { _, _, position ->
+                            getItem(position)?.run {
+                                val msg = "应用名：$appName; 包名：$packageName; 签名: $signature"
+                                val clipboardManager =
+                                    this@MainActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                clipboardManager.primaryClip = ClipData.newPlainText(null, msg)
+                                Toast.makeText(this@MainActivity, "已复制应用信息到剪切板！", Toast.LENGTH_SHORT).show()
+                            }
+                            true
+                        }
                     }
                     rv.layoutManager = LinearLayoutManager(this)
                     rv.adapter = adapter
@@ -173,17 +191,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setAppCount(num: Int) {
-        supportActionBar?.title = "${getString(R.string.app_name)}(共${num}个应用)"
-    }
-
-    private class MainAdapter(data: List<AppInfo>) :
-        BaseQuickAdapter<AppInfo, BaseViewHolder>(R.layout.item_main, data) {
-        override fun convert(helper: BaseViewHolder?, item: AppInfo?) {
-            helper?.setText(R.id.tvAppName, item?.appName)
-                ?.setText(R.id.tvPackageName, item?.packageName)
-                ?.setImageDrawable(R.id.ivAtator, item?.appIcon)
+        val titleStr = "(共${num}个应用)"
+        val content = "AllPackageName<small>$titleStr</small>"
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            supportActionBar?.title = Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY)
+        } else {
+            supportActionBar?.title = Html.fromHtml(content)
         }
     }
+
 
     private fun getAppInfo(appType: Int = ALL_APP): List<AppInfo> {
         val packageInfos = packageManager.getInstalledPackages(PackageManager.GET_SIGNATURES)
@@ -206,6 +222,8 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+        appInfos.clear()
+        appInfos.addAll(appInfo)
         return appInfo
 
     }
@@ -221,7 +239,7 @@ class MainActivity : AppCompatActivity() {
         appInfo.add(AppInfo(appName as String, packageName, appIcon, getSignatureSha1(signature)))
     }
 
-    private fun getSignatureSha1(bytes: ByteArray) : String {
+    private fun getSignatureSha1(bytes: ByteArray): String {
         val md = MessageDigest.getInstance("SHA1")
         val publicKey = md.digest(bytes)
         val hexString = StringBuilder()
@@ -231,11 +249,12 @@ class MainActivity : AppCompatActivity() {
             if (appendString.length == 1)
                 hexString.append("0")
             hexString.append(appendString)
-            if(i != publicKey.size - 1){
+            if (i != publicKey.size - 1) {
                 hexString.append(":")
             }
         }
         return hexString.toString()
     }
+
 
 }

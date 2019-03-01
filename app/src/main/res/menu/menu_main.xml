@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/search"
+        android:title="搜索"
+        app:showAsAction="always"
+        android:icon="@drawable/search"
+        />
+
     <item
         android:id="@+id/system_app"
-        android:title="系统App" />
+        android:title="系统App"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/intall_app"
-        android:title="非系统App" />
+        android:title="非系统App"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/all_app"
-        android:title="所有App" />
+        android:title="所有App"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/share"
-        android:title="分享" />
+        android:title="分享"
+        app:showAsAction="never" />
 </menu>
