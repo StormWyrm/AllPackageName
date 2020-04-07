@@ -37,7 +37,7 @@ class SearchActivity : AppCompatActivity() {
         mAdapter = MainAdapter(null).apply {
             setOnItemLongClickListener { _, _, position ->
                 getItem(position)?.run {
-                    val msg = "应用名：$appName; 包名：$packageName; 签名: $signature"
+                    val msg = "应用名：${appName}; 包名：${packageName}; versionCode：${versionCode}; versionName：${versionName}; 签名: ${signature}"
                     val clipboardManager =
                         this@SearchActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     clipboardManager.primaryClip = ClipData.newPlainText(null, msg)
