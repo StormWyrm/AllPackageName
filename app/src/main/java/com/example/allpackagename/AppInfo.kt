@@ -7,6 +7,8 @@ import android.os.Parcelable
 class AppInfo(
     val appName: String = "",
     val packageName: String,
+    val versionName: String,
+    val versionCode: Int,
     val appIcon: Drawable?,
     val signature: String
 ) : Comparable<AppInfo>, Parcelable {
@@ -20,6 +22,8 @@ class AppInfo(
     constructor(source: Parcel) : this(
         source.readString(),
         source.readString(),
+        source.readString(),
+        source.readInt(),
         null,
         source.readString()
     )
@@ -29,6 +33,8 @@ class AppInfo(
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeString(appName)
         writeString(packageName)
+        writeString(versionName)
+        writeInt(versionCode)
         writeString(signature)
     }
 

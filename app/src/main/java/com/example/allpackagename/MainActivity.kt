@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity() {
             val ps = PrintStream(file)
             val appInfos = mAdapter?.data ?: ArrayList<AppInfo>()
             for (appInfo in appInfos) {
-                val msg = "应用名：${appInfo.appName}; 包名：${appInfo.packageName}; 签名: ${appInfo.signature}"
+                val msg = "应用名：${appInfo.appName}; 包名：${appInfo.packageName}; versionCode：${appInfo.versionCode}; versionName：${appInfo.versionName}; 签名: ${appInfo.signature}"
                 ps.write(msg.toByteArray())
                 ps.println()
             }
@@ -176,7 +176,7 @@ class MainActivity : AppCompatActivity() {
         mAdapter = MainAdapter(null).apply {
             setOnItemLongClickListener { _, _, position ->
                 getItem(position)?.run {
-                    val msg = "应用名：$appName; 包名：$packageName; 签名: $signature"
+                    val msg = "应用名：${appName}; 包名：${packageName}; versionCode：${versionCode}; versionName：${versionName}; 签名: ${signature}"
                     val clipboardManager =
                         this@MainActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     clipboardManager.primaryClip = ClipData.newPlainText(null, msg)
@@ -257,9 +257,11 @@ class MainActivity : AppCompatActivity() {
     private fun addToList(packageInfo: PackageInfo) {
         val appName = packageInfo.applicationInfo.loadLabel(packageManager)
         val packageName = packageInfo.packageName
+        val versionName = packageInfo.versionName
+        val versionCode = packageInfo.versionCode
         val appIcon = packageInfo.applicationInfo.loadIcon(packageManager)
         val signature = packageInfo.signatures[0].toByteArray()
-        appInfos.add(AppInfo(appName as String, packageName, appIcon, getSignatureSha1(signature)))
+        appInfos.add(AppInfo(appName as String, packageName, versionName,versionCode,appIcon, getSignatureSha1(signature)))
     }
 
     private fun getSignatureSha1(bytes: ByteArray): String {

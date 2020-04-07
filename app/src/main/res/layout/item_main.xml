@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:cardUseCompatPadding="true"
-    app:cardCornerRadius="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:foreground="?attr/selectableItemBackground"
-    app:contentPadding="3dp"
-    app:cardElevation="5dp">
+    app:cardCornerRadius="8dp"
+    app:cardElevation="5dp"
+    app:cardUseCompatPadding="true"
+    app:contentPadding="3dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:padding="5dp"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="5dp">
 
         <ImageView
             android:id="@+id/ivAtator"
@@ -22,22 +23,40 @@
             android:layout_marginRight="10dp"
             tools:src="@mipmap/ic_launcher" />
 
-        <TextView
-            android:id="@+id/tvAppName"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/ivAtator"
-            android:layout_toRightOf="@id/ivAtator"
-            tools:text="应用名：AllPackageName"
-            />
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_alignBottom="@id/ivAtator"
-            android:layout_toRightOf="@id/ivAtator"
-            android:id="@+id/tvPackageName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="包名：com.example.allpackagename" />
+            <TextView
+                android:id="@+id/tvAppName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="应用名：AllPackageName" />
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/tvVersionCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                tools:text="VerisonCode：10" />
+
+            <TextView
+                android:id="@+id/tvVersionName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                tools:text="VersionName：1.0.0" />
+
+            <TextView
+                android:id="@+id/tvPackageName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="包名：com.example.allpackagename" />
+        </LinearLayout>
+
+
+    </>
 </androidx.cardview.widget.CardView>

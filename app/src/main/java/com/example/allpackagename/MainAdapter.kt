@@ -8,6 +8,8 @@ class MainAdapter(data: List<AppInfo>?) :
     override fun convert(helper: BaseViewHolder?, item: AppInfo?) {
         helper?.setText(R.id.tvAppName, item?.appName)
             ?.setText(R.id.tvPackageName, item?.packageName)
+            ?.setText(R.id.tvVersionName, "versionName: ${item?.versionName}")
+            ?.setText(R.id.tvVersionCode, "versionCode: ${item?.versionCode}")
             ?.setImageDrawable(R.id.ivAtator, item?.appIcon)
     }
 }
