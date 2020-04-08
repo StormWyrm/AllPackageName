@@ -257,8 +257,10 @@ class MainActivity : AppCompatActivity() {
     private fun addToList(packageInfo: PackageInfo) {
         val appName = packageInfo.applicationInfo.loadLabel(packageManager)
         val packageName = packageInfo.packageName
-        val versionName = packageInfo.versionName
-        val versionCode = packageInfo.versionCode
+        var versionName = packageInfo.versionName
+        if(versionName.isNullOrEmpty())
+            versionName = ""
+        val versionCode = packageInfo.longVersionCode
         val appIcon = packageInfo.applicationInfo.loadIcon(packageManager)
         val signature = packageInfo.signatures[0].toByteArray()
         appInfos.add(AppInfo(appName as String, packageName, versionName,versionCode,appIcon, getSignatureSha1(signature)))

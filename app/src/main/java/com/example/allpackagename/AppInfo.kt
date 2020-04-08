@@ -8,7 +8,7 @@ class AppInfo(
     val appName: String = "",
     val packageName: String,
     val versionName: String,
-    val versionCode: Int,
+    val versionCode: Long,
     val appIcon: Drawable?,
     val signature: String
 ) : Comparable<AppInfo>, Parcelable {
@@ -23,7 +23,7 @@ class AppInfo(
         source.readString(),
         source.readString(),
         source.readString(),
-        source.readInt(),
+        source.readLong(),
         null,
         source.readString()
     )
@@ -34,7 +34,7 @@ class AppInfo(
         writeString(appName)
         writeString(packageName)
         writeString(versionName)
-        writeInt(versionCode)
+        writeLong(versionCode)
         writeString(signature)
     }
 
